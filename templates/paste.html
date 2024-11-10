@@ -38,12 +38,37 @@
         const codeElement = document.querySelector('code');
         const content = codeElement.textContent;
         
-        // Simple language detection
         function detectLanguage(code) {
-            if (code.includes('function') || code.includes('var') || code.includes('const')) return 'javascript';
-            if (code.includes('def ') || code.includes('import ') || code.includes('class ')) return 'python';
-            if (code.includes('<html') || code.includes('</div>')) return 'html';
-            if (code.includes('{') && code.includes('}') && code.includes(';')) return 'javascript';
+            code = code.trim();
+        
+            try {
+                JSON.parse(code);
+                return 'json';
+            } catch (e) {}
+        
+            const patterns = [
+                { lang: 'javascript', regex: /(\bfunction\b|\bvar\b|\bconst\b|\blet\b|\bconsole\.log\b|=>)/ },
+                { lang: 'python', regex: /(\bdef\b|\bimport\b|\bclass\b|\bprint\(|^\s*#)/ },
+                { lang: 'html', regex: /<!DOCTYPE html>|<html>|<\/html>|<head>|<body>|<\/body>|<div>|<\/div>/i },
+                { lang: 'css', regex: /(\.[\w-]+\s*\{|\#[\w-]+\s*\{)/ },
+                { lang: 'java', regex: /(\bpublic\b\s+\bclass\b|\bSystem\.out\.println\b)/ },
+                { lang: 'c++', regex: /(\b#include\b|\bcout\b|\bcin\b|\bstd::|\bint main\(\))/ },
+                { lang: 'c#', regex: /(\busing\b\s+\bSystem\b|\bConsole\.WriteLine\b)/ },
+                { lang: 'php', regex: /<\?php|\becho\b|\b\$[\w]+\b/ },
+                { lang: 'ruby', regex: /(\bdef\b|\bputs\b|\bend\b|\bclass\b)/ },
+                { lang: 'go', regex: /(\bpackage\b\s+\bmain\b|\bfunc\b|\bfmt\.Println\b)/ },
+                { lang: 'sql', regex: /(\bSELECT\b|\bFROM\b|\bWHERE\b|\bINSERT\b|\bUPDATE\b|\bDELETE\b)/i },
+                { lang: 'bash', regex: /(^#!\/bin\/bash|^\s*echo\s+)/ },
+                { lang: 'xml', regex: /^<\?xml|<([A-Za-z]+)([^<]+)*(?:>(.*)<\/\1>|\s+\/>)/ },
+                { lang: 'plaintext', regex: /[\s\S]*/ }
+            ];
+        
+            for (let pattern of patterns) {
+                if (pattern.regex.test(code)) {
+                    return pattern.lang;
+                }
+            }
+        
             return 'plaintext';
         }
         
