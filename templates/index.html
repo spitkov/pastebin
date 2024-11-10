@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pastebin</title>
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="{{ url_for('static', path='style.css') }}" as="style">
+    
+    <!-- Critical CSS first -->
+    <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css" rel="stylesheet">
+    
+    <!-- Prism.js with better language support -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+</head>
+<body class="bg-dark">
+    <div class="container">
+        <h1>Pastebin</h1>
+        
+        <div id="input-section">
+            <form id="paste-form" 
+                  class="paste-form">
+                <textarea 
+                    id="content-input"
+                    name="content" 
+                    placeholder="Paste your content here..."
+                    required
+                    spellcheck="false"
+                    autocomplete="off"
+                ></textarea>
+                <button type="submit">Publish</button>
+            </form>
+        </div>
+        
+        <div id="result-container"></div>
+    </div>
+
+    <script>
+        const resultContainer = document.querySelector('#result-container');
+        const form = document.querySelector('#paste-form');
+        const contentInput = document.querySelector('#content-input');
+        
+        // Pre-compile template
+        const successTemplate = (url, pasteId) => `
+            <div class="success-message">
+                <h2>Published Successfully! 🎉</h2>
+                <div class="url-container">
+                    <a href="/${pasteId}" class="url-link">${url}</a>
+                    <div class="button-group">
+                        <button onclick="copyUrl('${url}')" class="copy-btn">Copy URL</button>
+                        <a href="/raw/${pasteId}" class="raw-btn" target="_blank">View Raw</a>
+                    </div>
+                </div>
+                <button onclick="resetForm()" class="reset-btn">Create New</button>
+            </div>
+        `;
+
+        // Optimistic UI update
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const content = contentInput.value;
+            if (!content) return;
+
+            // Hide form immediately
+            form.style.display = 'none';
+
+            // Show loading state instantly
+            const tempId = Math.random().toString(36).substring(7);
+            const tempUrl = `http://127.0.0.1:3000/${tempId}`;
+            resultContainer.innerHTML = successTemplate(tempUrl, tempId);
+
+            // Send actual request
+            try {
+                const formData = new FormData();
+                formData.append('content', content);
+                const response = await fetch('/publish', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const url = await response.text();
+                const cleanUrl = url.replace(/"/g, '');
+                const pasteId = cleanUrl.split('/').pop();
+                
+                // Update URL silently
+                const urlLink = resultContainer.querySelector('.url-link');
+                urlLink.href = `/${pasteId}`;
+                urlLink.textContent = cleanUrl;
+                
+                // Update copy button to use new URL
+                const copyBtn = resultContainer.querySelector('.copy-btn');
+                copyBtn.onclick = () => copyUrl(cleanUrl);
+                
+            } catch (error) {
+                console.error('Failed to publish:', error);
+            }
+        });
+
+        function resetForm() {
+            form.style.display = 'block';
+            form.reset();
+            resultContainer.textContent = '';
+        }
+
+        function copyUrl(url) {
+            navigator.clipboard.writeText(url);
+            const copyBtn = document.querySelector('.copy-btn');
+            copyBtn.textContent = 'Copied!';
+            setTimeout(() => copyBtn.textContent = 'Copy URL', 500);
+        }
+
+        // Add language detection function
+        function detectLanguage(code) {
+            if (code.includes('function') || code.includes('var') || code.includes('const')) return 'javascript';
+            if (code.includes('def ') || code.includes('import ') || code.includes('class ')) return 'python';
+            if (code.includes('<html') || code.includes('</div>')) return 'html';
+            if (code.includes('{') && code.includes('}') && code.includes(';')) return 'javascript';
+            return 'plaintext';
+        }
+    </script>
+</body>
+</html> 

@@ -1,0 +1,225 @@
+:root {
+    --bg-dark: #1a1a1a;
+    --bg-darker: #121212;
+    --text-color: #ffffff;
+    --primary-color: #3b82f6;
+    --success-color: #10b981;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-color);
+    font-family: system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container {
+    width: 90%;
+    max-width: 800px;
+    padding: 2rem;
+}
+
+h1 {
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    animation: slideDown 0.5s ease;
+}
+
+.paste-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    animation: fadeIn 0.2s ease;
+}
+
+textarea {
+    width: 100%;
+    height: 200px;
+    padding: 1rem;
+    background-color: var(--bg-darker);
+    border: 1px solid #333;
+    border-radius: 12px;
+    color: var(--text-color);
+    font-size: 1rem;
+    resize: vertical;
+}
+
+textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+button {
+    padding: 0.75rem 1.5rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transform: none;
+}
+
+button:hover {
+    filter: brightness(1.1);
+}
+
+.success-message {
+    background-color: var(--bg-darker);
+    padding: 1.5rem;
+    border-radius: 12px;
+    animation: slideUp 0.5s ease;
+    transform: translateZ(0);
+    will-change: transform;
+    backface-visibility: hidden;
+}
+
+.success-message h2 {
+    color: var(--success-color);
+    margin-bottom: 1rem;
+}
+
+pre {
+    background-color: var(--bg-dark);
+    padding: 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 1rem 0;
+}
+
+.reset-btn {
+    background-color: #374151;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.paste-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.copy-btn {
+    background-color: var(--success-color);
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+}
+
+.copy-btn:hover {
+    background-color: #0d9668;
+}
+
+a.reset-btn {
+    display: inline-block;
+    text-decoration: none;
+    color: var(--text-color);
+    margin-top: 1rem;
+}
+
+.url-container {
+    display: flex;
+    gap: 0.5rem;
+    margin: 1rem 0;
+    background: var(--bg-dark);
+    padding: 0.5rem;
+    border-radius: 8px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.url-display {
+    flex: 1;
+    background: var(--bg-darker);
+    border: 1px solid #333;
+    border-radius: 6px;
+    padding: 0.5rem;
+    color: var(--text-color);
+    font-family: monospace;
+}
+
+.url-display:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.url-link {
+    flex: 1;
+    background: var(--bg-darker);
+    border: 1px solid #333;
+    border-radius: 6px;
+    padding: 0.5rem;
+    color: var(--text-color);
+    font-family: monospace;
+    text-decoration: none;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.url-link:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+/* Prism line numbers customization */
+.line-numbers .line-numbers-rows {
+    border-right: 1px solid #333;
+    padding-right: 0.5rem;
+}
+
+.line-numbers-rows > span:before {
+    color: #666;
+}
+
+pre[class*="language-"].line-numbers {
+    padding-left: 3.5em;
+}
+
+.button-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.raw-btn {
+    padding: 0.5rem 1rem;
+    background-color: #4b5563;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+}
+
+.raw-btn:hover {
+    background-color: #374151;
+}
+  

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pastebin - View</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css" rel="stylesheet">
+    
+    <!-- Add more language support -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
+</head>
+<body class="bg-dark">
+    <div class="container">
+        <h1>Pastebin</h1>
+        
+        <div class="success-message">
+            <div class="paste-header">
+                <h2>Paste #{{ paste_id }}</h2>
+                <div class="button-group">
+                    <button onclick="copyContent()" class="copy-btn">Copy</button>
+                    <a href="/raw/{{ paste_id }}" class="raw-btn" target="_blank">View Raw</a>
+                </div>
+            </div>
+            <pre class="line-numbers"><code class="language-auto">{{ content }}</code></pre>
+            <a href="/" class="reset-btn">Create New</a>
+        </div>
+    </div>
+
+    <script>
+        // Configure Prism
+        Prism.plugins.autoloader.languages_path = 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/';
+        
+        // Try to detect language
+        const codeElement = document.querySelector('code');
+        const content = codeElement.textContent;
+        
+        // Simple language detection
+        function detectLanguage(code) {
+            if (code.includes('function') || code.includes('var') || code.includes('const')) return 'javascript';
+            if (code.includes('def ') || code.includes('import ') || code.includes('class ')) return 'python';
+            if (code.includes('<html') || code.includes('</div>')) return 'html';
+            if (code.includes('{') && code.includes('}') && code.includes(';')) return 'javascript';
+            return 'plaintext';
+        }
+        
+        // Set detected language
+        const detectedLang = detectLanguage(content);
+        codeElement.className = `language-${detectedLang}`;
+        
+        // Trigger highlighting
+        Prism.highlightElement(codeElement);
+
+        function copyContent() {
+            const content = document.querySelector('code').textContent;
+            navigator.clipboard.writeText(content).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                btn.textContent = 'Copied!';
+                setTimeout(() => btn.textContent = 'Copy', 2000);
+            });
+        }
+    </script>
+</body>
+</html> 
